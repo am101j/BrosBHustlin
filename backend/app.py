@@ -26,10 +26,25 @@ from datetime import datetime
 import uuid
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, origins=['http://localhost:3000', 'http://127.0.0.1:3000'], 
+     methods=['GET', 'POST', 'OPTIONS'],
+     allow_headers=['Content-Type', 'Authorization'])
 
 # Load models
-yolo = YOLO('yolov8n.pt')
+# Try custom trained model first, then fashion model, then general
+try:
+    # Custom finance bro trained model (best accuracy)
+    yolo = YOLO('training/runs/detect/finance_bro_detector/weights/best.pt')
+    print("Using custom finance bro YOLO model")
+except:
+    try:
+        # Fashion-trained YOLO model for clothing detection
+        yolo = YOLO('keremberke/yolov8m-fashion')
+        print("Using fashion YOLO model")
+    except:
+        # Fallback to general model if others unavailable
+        yolo = YOLO('yolov8n.pt')
+        print("Using general YOLO model")
 blip_processor = BlipProcessor.from_pretrained("Salesforce/blip-image-captioning-base")
 blip_model = BlipForConditionalGeneration.from_pretrained("Salesforce/blip-image-captioning-base")
 clip_model = CLIPModel.from_pretrained("openai/clip-vit-base-patch32")
@@ -73,9 +88,12 @@ def analyze_image():
         detected = []
         score = 0
         
-        # YOLO detection
+        # YOLO fashion detection
         results = yolo(temp_path)[0]
         classes = [results.names[int(cls)] for cls in results.boxes.cls]
+        
+        # Print detected classes for debugging
+        print(f"YOLO detected classes: {classes}")
         
         # BLIP captioning
         inputs = blip_processor(image, return_tensors="pt")
@@ -93,28 +111,38 @@ def analyze_image():
         clip_outputs = clip_model(**clip_inputs)
         similarities = clip_outputs.logits_per_image.softmax(dim=1)[0]
         
-        # Scoring
-        if similarities[0] > 0.35:
+        # Fashion YOLO scoring (more accurate clothing detection)
+        fashion_items = {
+            'vest': 50, 'jacket': 50, 'blazer': 40, 'sweater': 40, 'pullover': 40,
+            'shirt': 25, 'shoes': 30, 'sneakers': 30, 'watch': 100, 'laptop': 20
+        }
+        
+        for class_name in classes:
+            class_lower = class_name.lower()
+            for item, points in fashion_items.items():
+                if item in class_lower:
+                    detected.append({"name": f"{class_name}", "points": points})
+                    score += points
+                    break
+        
+        # CLIP detection for specific brands/styles
+        if similarities[0] > 0.25:  # Patagonia vest
             detected.append({"name": "Patagonia vest/fleece", "points": 50})
             score += 50
-        if similarities[1] > 0.1:
+        if similarities[1] > 0.15:  # Quarter-zip
             detected.append({"name": "Quarter-zip sweater", "points": 40})
             score += 40
-        if "watch" in classes:
-            detected.append({"name": "Luxury watch", "points": 100})
-            score += 100
-        if any(word in caption for word in ["airpods", "earbuds"]):
-            detected.append({"name": "AirPods", "points": 45})
-            score += 45
-        if similarities[3] > 0.4:
+        if similarities[3] > 0.3:  # Allbirds
             detected.append({"name": "Allbirds shoes", "points": 30})
             score += 30
-        if similarities[2] > 0.5:
+        if similarities[2] > 0.4:  # Business casual
             detected.append({"name": "Business casual attire", "points": 25})
             score += 25
-        if "laptop" in classes:
-            detected.append({"name": "MacBook Pro", "points": 20})
-            score += 20
+            
+        # BLIP detection for tech items
+        if any(word in caption for word in ["airpods", "earbuds", "headphones"]):
+            detected.append({"name": "AirPods", "points": 45})
+            score += 45
             
         os.remove(temp_path)
         
@@ -227,4 +255,4 @@ def get_leaderboard():
         return jsonify({'success': False, 'error': str(e)}), 500
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5000)
+    app.run(debug=True, port=5000, host='0.0.0.0')

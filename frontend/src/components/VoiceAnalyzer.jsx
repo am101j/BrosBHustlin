@@ -247,11 +247,11 @@ const VoiceAnalyzer = ({ onComplete }) => {
       ))}
 
       <div className="card w-full max-w-3xl">
-        <h2 className="text-4xl md:text-5xl font-bold mb-8 text-center text-pink-300">
+        <h2 className="text-3xl md:text-4xl font-bold mb-6 text-center text-pink-300">
           🎤 Voice Analyzer
         </h2>
         
-        <div className="flex flex-col items-center space-y-8">
+        <div className="flex flex-col items-center space-y-6">
           <div className="text-center w-full">
             <div className="relative inline-block mb-6">
               <div className={`text-8xl md:text-9xl transition-all duration-300 ${
@@ -280,7 +280,7 @@ const VoiceAnalyzer = ({ onComplete }) => {
               </div>
             )}
             
-            <p className="mb-8 text-gray-200 text-lg font-medium max-w-2xl mx-auto">
+            <p className="mb-6 text-gray-300 text-base md:text-lg font-normal max-w-2xl mx-auto leading-relaxed">
               {isRecording 
                 ? "🎙️ Recording... Use corporate buzzwords to maximize your score!"
                 : isAnalyzing

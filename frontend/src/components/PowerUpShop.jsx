@@ -34,7 +34,7 @@ const PowerUpShop = ({ availablePoints, onPurchase, purchasedPowerUps }) => {
       description: 'Slow all enemies for 2 seconds',
       cost: 60,
       icon: '🐌',
-      color: 'from-green-400 to-emerald-500'
+      color: 'from-amber-400 to-amber-500'
     },
     {
       id: 'instantBoost',
@@ -67,7 +67,7 @@ const PowerUpShop = ({ availablePoints, onPurchase, purchasedPowerUps }) => {
 
   return (
     <div className="card w-full max-w-4xl">
-      <h2 className="text-4xl md:text-5xl font-bold mb-6 text-center text-cyan-300">
+      <h2 className="text-3xl md:text-4xl font-bold mb-6 text-center text-cyan-300">
         🛒 Power-Up Shop
       </h2>
       
@@ -111,7 +111,7 @@ const PowerUpShop = ({ availablePoints, onPurchase, purchasedPowerUps }) => {
                     {powerUp.cost} pts
                   </span>
                   {owned > 0 && (
-                    <span className="text-green-400 font-bold">
+                    <span className="text-amber-400 font-bold">
                       Owned: {owned}
                     </span>
                   )}
@@ -133,8 +133,8 @@ const PowerUpShop = ({ availablePoints, onPurchase, purchasedPowerUps }) => {
       </div>
 
       {Object.keys(purchasedPowerUps).length > 0 && (
-        <div className="glass-strong rounded-xl p-4 border-2 border-green-500/30">
-          <div className="text-lg font-bold text-green-400 mb-2">
+        <div className="glass-strong rounded-xl p-4 border-2 border-amber-500/30">
+          <div className="text-lg font-bold text-amber-400 mb-2">
             ✅ Purchased Power-Ups:
           </div>
           <div className="flex flex-wrap gap-2">
@@ -144,7 +144,7 @@ const PowerUpShop = ({ availablePoints, onPurchase, purchasedPowerUps }) => {
               return (
                 <div
                   key={id}
-                  className="bg-slate-700/50 px-3 py-1 rounded-lg border border-green-500/30"
+                  className="bg-slate-700/50 px-3 py-1 rounded-lg border border-amber-500/30"
                 >
                   <span className="text-gray-200">
                     {powerUp.icon} {powerUp.name} x{quantity}

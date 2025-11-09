@@ -140,7 +140,7 @@ const SpermRace = ({ broScore, purchasedPowerUps, onComplete }) => {
     const racers = [
       { name: 'You', x: 50, y: 80, color: '#06b6d4', suitability: suitability },
       { name: 'Chad', x: 50, y: 180, color: '#ef4444', suitability: 85 },
-      { name: 'Brad', x: 50, y: 280, color: '#10b981', suitability: 70 },
+      { name: 'Brad', x: 50, y: 280, color: '#f59e0b', suitability: 70 },
       { name: 'Kyle', x: 50, y: 380, color: '#f59e0b', suitability: 45 }
     ]
     
@@ -309,7 +309,7 @@ const SpermRace = ({ broScore, purchasedPowerUps, onComplete }) => {
 
       case 'instantBoost':
         playerRacer.x += 50 // Instant forward movement
-        createParticles(playerRacer.x, playerRacer.y, '#22c55e')
+        createParticles(playerRacer.x, playerRacer.y, '#f59e0b')
         break
 
       case 'magnet':
@@ -385,8 +385,8 @@ const SpermRace = ({ broScore, purchasedPowerUps, onComplete }) => {
         baseSpeed: 1.2,
         x: 50, 
         y: lanes[2],
-        color: '#10b981', 
-        glow: '#34d399',
+        color: '#f59e0b', 
+        glow: '#fbbf24',
         lane: 2,
         boostTimer: 0,
         obstacleTimer: 0,
@@ -483,11 +483,11 @@ const SpermRace = ({ broScore, purchasedPowerUps, onComplete }) => {
         // Only draw if visible on screen
         if (booster.x < -50 || booster.x > canvas.width + 50) return
         
-        ctx.fillStyle = 'rgba(34, 197, 94, 0.7)'
+        ctx.fillStyle = 'rgba(245, 158, 11, 0.7)'
         ctx.beginPath()
         ctx.arc(booster.x, booster.y, booster.width / 2, 0, Math.PI * 2)
         ctx.fill()
-        ctx.strokeStyle = '#22c55e'
+        ctx.strokeStyle = '#f59e0b'
         ctx.lineWidth = 2
         ctx.stroke()
         // Draw animated sparkle
@@ -608,7 +608,7 @@ const SpermRace = ({ broScore, purchasedPowerUps, onComplete }) => {
               if (racer.boostTimer === 0 && !racer.activePowerUp) {
                 racer.speed = racer.baseSpeed * 2.5
                 racer.boostTimer = 90 // Boost for 90 frames
-                createParticles(booster.x, booster.y, '#22c55e')
+                createParticles(booster.x, booster.y, '#f59e0b')
               }
             }
           }
@@ -683,7 +683,7 @@ const SpermRace = ({ broScore, purchasedPowerUps, onComplete }) => {
         
         // Boost effect
         if (racer.boostTimer > 0) {
-          ctx.strokeStyle = '#22c55e'
+          ctx.strokeStyle = '#f59e0b'
           ctx.lineWidth = 2
           ctx.setLineDash([5, 5])
           ctx.beginPath()
@@ -692,7 +692,7 @@ const SpermRace = ({ broScore, purchasedPowerUps, onComplete }) => {
           ctx.setLineDash([])
           // Speed lines
           for (let i = 0; i < 5; i++) {
-            ctx.strokeStyle = `rgba(34, 197, 94, ${0.5 - i * 0.1})`
+            ctx.strokeStyle = `rgba(245, 158, 11, ${0.5 - i * 0.1})`
             ctx.lineWidth = 1
             ctx.beginPath()
             ctx.moveTo(racer.x - 15 - i * 5, racer.y - 5)
@@ -835,7 +835,7 @@ const SpermRace = ({ broScore, purchasedPowerUps, onComplete }) => {
 
   return (
     <div className="card w-full max-w-4xl">
-      <h2 className="text-4xl md:text-5xl font-bold mb-8 text-center text-cyan-300">
+      <h2 className="text-3xl md:text-4xl font-bold mb-6 text-center text-cyan-300">
         🏃 Sperm Race Championship
       </h2>
       
@@ -897,7 +897,7 @@ const SpermRace = ({ broScore, purchasedPowerUps, onComplete }) => {
               <button
                 onClick={() => activatePowerUp('slowEnemies')}
                 disabled={availablePowerUps.slowEnemies <= 0}
-                className="px-4 py-2 bg-gradient-to-r from-green-400 to-emerald-500 text-white rounded-lg font-semibold hover:scale-105 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-4 py-2 bg-gradient-to-r from-amber-400 to-amber-500 text-white rounded-lg font-semibold hover:scale-105 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 🐌 Slow Enemies ({availablePowerUps.slowEnemies})
               </button>
@@ -922,7 +922,7 @@ const SpermRace = ({ broScore, purchasedPowerUps, onComplete }) => {
             )}
           </div>
           {Object.keys(activePowerUps).length > 0 && (
-            <div className="mt-3 text-center text-sm text-green-400 font-semibold">
+            <div className="mt-3 text-center text-sm text-amber-400 font-semibold">
               Active: {Object.keys(activePowerUps).map(key => {
                 const icons = {
                   doubleSpeed: '⚡',
@@ -974,7 +974,7 @@ const SpermRace = ({ broScore, purchasedPowerUps, onComplete }) => {
               <span className="text-cyan-300">↓ Arrow Down / S</span> - Move Down
             </span>
             <span className="block mt-4 text-sm text-gray-400">
-              ⚠️ Avoid obstacles (red) and grab boosters (green) to gain an edge!
+              ⚠️ Avoid obstacles (red) and grab boosters (amber) to gain an edge!
             </span>
           </p>
           <button

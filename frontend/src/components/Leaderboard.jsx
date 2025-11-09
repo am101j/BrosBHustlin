@@ -84,7 +84,7 @@ const Leaderboard = ({ totalScore, cameraScore, voiceScore, detectedItems, buzzw
 
   return (
     <div className="card w-full max-w-4xl">
-      <h2 className="text-4xl md:text-5xl font-bold mb-8 text-center text-purple-400">
+      <h2 className="text-3xl md:text-4xl font-bold mb-6 text-center text-purple-400">
         🏆 BrosBHustlin Leaderboard
       </h2>
       

@@ -19,7 +19,7 @@ if not shutil.which('ffmpeg'):
             break
 from PIL import Image
 import torch
-from transformers import BlipProcessor, BlipForConditionalGeneration, CLIPProcessor, CLIPModel, pipeline
+from transformers import pipeline
 from ultralytics import YOLO
 import sqlite3
 from datetime import datetime
@@ -34,7 +34,7 @@ CORS(app, origins=['http://localhost:3000', 'http://127.0.0.1:3000'],
 # Try custom trained model first, then fashion model, then general
 try:
     # Custom finance bro trained model (best accuracy)
-    yolo = YOLO('training/runs/detect/finance_bro_detector/weights/best.pt')
+    yolo = YOLO('best.pt')
     print("Using custom finance bro YOLO model")
 except:
     try:
@@ -45,10 +45,6 @@ except:
         # Fallback to general model if others unavailable
         yolo = YOLO('yolov8n.pt')
         print("Using general YOLO model")
-blip_processor = BlipProcessor.from_pretrained("Salesforce/blip-image-captioning-base")
-blip_model = BlipForConditionalGeneration.from_pretrained("Salesforce/blip-image-captioning-base")
-clip_model = CLIPModel.from_pretrained("openai/clip-vit-base-patch32")
-clip_processor = CLIPProcessor.from_pretrained("openai/clip-vit-base-patch32")
 whisper = pipeline("automatic-speech-recognition", model="openai/whisper-tiny")
 
 # Initialize database
@@ -88,61 +84,37 @@ def analyze_image():
         detected = []
         score = 0
         
-        # YOLO fashion detection
-        results = yolo(temp_path)[0]
-        classes = [results.names[int(cls)] for cls in results.boxes.cls]
+        # YOLO detection with confidence threshold
+        results = yolo(temp_path, conf=0.3)[0]  # 25% confidence threshold - optimal for trained model
         
-        # Print detected classes for debugging
-        print(f"YOLO detected classes: {classes}")
+        if len(results.boxes) > 0:
+            classes = [results.names[int(cls)] for cls in results.boxes.cls]
+            confidences = results.boxes.conf.tolist()
+            
+            # Print detected classes with confidence for debugging
+            for cls, conf in zip(classes, confidences):
+                print(f"YOLO detected: {cls} (confidence: {conf:.2f})")
+        else:
+            classes = []
+            confidences = []
+            print("YOLO: No detections above confidence threshold")
         
-        # BLIP captioning
-        inputs = blip_processor(image, return_tensors="pt")
-        out = blip_model.generate(**inputs, max_length=50)
-        caption = blip_processor.decode(out[0], skip_special_tokens=True).lower()
-        
-        # CLIP detection
-        clip_texts = [
-            "person wearing patagonia vest",
-            "person wearing quarter-zip pullover",
-            "person wearing formal dress shirt with tie", 
-            "person wearing allbirds shoes"
-        ]
-        clip_inputs = clip_processor(text=clip_texts, images=image, return_tensors="pt", padding=True)
-        clip_outputs = clip_model(**clip_inputs)
-        similarities = clip_outputs.logits_per_image.softmax(dim=1)[0]
-        
-        # Fashion YOLO scoring (more accurate clothing detection)
-        fashion_items = {
-            'vest': 50, 'jacket': 50, 'blazer': 40, 'sweater': 40, 'pullover': 40,
-            'shirt': 25, 'shoes': 30, 'sneakers': 30, 'watch': 100, 'laptop': 20
+        # Custom trained model scoring - YOLO only
+        bro_items = {
+            'patagonia_vest': 50,
+            'quarter_zip_sweater': 40,
+            'luxury_watch': 100,
+            'airpods': 45,
+            'allbirds_shoes': 30,
+            'business_shirt': 25,
+            'macbook_pro': 20
         }
         
         for class_name in classes:
-            class_lower = class_name.lower()
-            for item, points in fashion_items.items():
-                if item in class_lower:
-                    detected.append({"name": f"{class_name}", "points": points})
-                    score += points
-                    break
-        
-        # CLIP detection for specific brands/styles
-        if similarities[0] > 0.25:  # Patagonia vest
-            detected.append({"name": "Patagonia vest/fleece", "points": 50})
-            score += 50
-        if similarities[1] > 0.15:  # Quarter-zip
-            detected.append({"name": "Quarter-zip sweater", "points": 40})
-            score += 40
-        if similarities[3] > 0.3:  # Allbirds
-            detected.append({"name": "Allbirds shoes", "points": 30})
-            score += 30
-        if similarities[2] > 0.4:  # Business casual
-            detected.append({"name": "Business casual attire", "points": 25})
-            score += 25
-            
-        # BLIP detection for tech items
-        if any(word in caption for word in ["airpods", "earbuds", "headphones"]):
-            detected.append({"name": "AirPods", "points": 45})
-            score += 45
+            if class_name in bro_items:
+                points = bro_items[class_name]
+                detected.append({"name": class_name.replace('_', ' ').title(), "points": points})
+                score += points
             
         os.remove(temp_path)
         

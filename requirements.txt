@@ -1,8 +1,0 @@
-ultralytics
-transformers
-torch
-torchvision
-pillow
-opencv-python
-librosa
-soundfile

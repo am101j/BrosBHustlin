@@ -95,7 +95,7 @@ const PointNotification = ({ points, itemName, onComplete }) => {
             <div className="text-7xl font-gaming text-yellow-400 mb-2 animate-flicker drop-shadow-[0_0_10px_rgba(250,204,21,0.8)]">
               +{points}
             </div>
-            <div className="text-xl text-glow-body font-gaming-sub tracking-wider uppercase">
+            <div className="text-xl text-gray-200 font-gaming-sub tracking-wider uppercase">
               {itemName}
             </div>
           </div>
@@ -247,7 +247,7 @@ const VoiceAnalyzer = ({ onComplete }) => {
       ))}
 
       <div className="card w-full max-w-3xl">
-        <h2 className="text-4xl md:text-5xl font-bold mb-8 text-center text-glow-pink">
+        <h2 className="text-4xl md:text-5xl font-bold mb-8 text-center text-pink-300">
           🎤 Voice Analyzer
         </h2>
         
@@ -280,7 +280,7 @@ const VoiceAnalyzer = ({ onComplete }) => {
               </div>
             )}
             
-            <p className="mb-8 text-glow-body text-lg font-medium max-w-2xl mx-auto">
+            <p className="mb-8 text-gray-200 text-lg font-medium max-w-2xl mx-auto">
               {isRecording 
                 ? "🎙️ Recording... Use corporate buzzwords to maximize your score!"
                 : isAnalyzing
@@ -292,7 +292,7 @@ const VoiceAnalyzer = ({ onComplete }) => {
             <button
               onClick={isRecording ? stopRecording : startRecording}
               disabled={isAnalyzing || notifications.length > 0}
-              className={`min-w-[250px] px-8 py-4 rounded-xl text-xl font-semibold text-glow-body border transform transition-all duration-300 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none ${
+              className={`min-w-[250px] px-8 py-4 rounded-xl text-xl font-semibold text-gray-100 border transform transition-all duration-300 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none ${
                 isRecording 
                   ? 'bg-slate-700 border-slate-600 hover:bg-slate-600 shadow-lg' 
                   : isAnalyzing

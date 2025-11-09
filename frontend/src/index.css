@@ -292,66 +292,26 @@
   font-weight: 700;
 }
 
-/* Ripple animations */
-@keyframes ripple {
+/* Flowing dollar signs animation */
+@keyframes flowDown {
   0% {
-    transform: scale(0);
-    opacity: 0.6;
+    transform: translateY(-100vh) rotate(0deg);
+    opacity: 0;
   }
-  50% {
+  10% {
+    opacity: 0.3;
+  }
+  90% {
     opacity: 0.3;
   }
   100% {
-    transform: scale(4);
+    transform: translateY(100vh) rotate(360deg);
     opacity: 0;
   }
 }
 
-@keyframes ripple2 {
-  0% {
-    transform: scale(0);
-    opacity: 0.5;
-  }
-  50% {
-    opacity: 0.25;
-  }
-  100% {
-    transform: scale(3.5);
-    opacity: 0;
-  }
-}
-
-@keyframes ripple3 {
-  0% {
-    transform: scale(0);
-    opacity: 0.4;
-  }
-  50% {
-    opacity: 0.2;
-  }
-  100% {
-    transform: scale(4.5);
-    opacity: 0;
-  }
-}
-
-.ripple {
-  position: absolute;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(103, 232, 249, 0.3) 0%, rgba(167, 139, 250, 0.2) 50%, transparent 100%);
-  pointer-events: none;
-}
-
-.ripple-1 {
-  animation: ripple 8s ease-out infinite;
-}
-
-.ripple-2 {
-  animation: ripple2 10s ease-out infinite;
-  animation-delay: 2s;
-}
-
-.ripple-3 {
-  animation: ripple3 12s ease-out infinite;
-  animation-delay: 4s;
+.dollar-sign {
+  animation: flowDown 15s linear infinite;
+  font-family: 'Press Start 2P', monospace;
+  user-select: none;
 }

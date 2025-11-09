@@ -288,7 +288,7 @@ const CameraScanner = ({ onComplete }) => {
       ))}
 
       <div className="card w-full max-w-3xl">
-        <h2 className="text-4xl md:text-5xl font-bold mb-8 text-center text-glow-cyan">
+        <h2 className="text-4xl md:text-5xl font-bold mb-8 text-center text-cyan-300">
           📸 Visual Scanner
         </h2>
         
@@ -309,7 +309,7 @@ const CameraScanner = ({ onComplete }) => {
                 <div className="absolute inset-0 bg-black/50 flex items-center justify-center backdrop-blur-sm">
                   <div className="text-center">
                     <div className="text-6xl mb-4 animate-pulse">🔍</div>
-                    <div className="text-2xl font-bold text-glow-blue">Analyzing...</div>
+                    <div className="text-2xl font-bold text-blue-300">Analyzing...</div>
                   </div>
                 </div>
               )}
@@ -317,14 +317,14 @@ const CameraScanner = ({ onComplete }) => {
           </div>
 
           <div className="text-center w-full">
-            <p className="mb-6 text-glow-body text-lg font-medium max-w-2xl mx-auto">
+            <p className="mb-6 text-gray-200 text-lg font-medium max-w-2xl mx-auto">
               Position yourself in frame and click capture to detect your finance bro items!
             </p>
             
             <button
               onClick={capture}
               disabled={isAnalyzing || notifications.length > 0 || showBoo}
-              className="btn-primary text-glow-body disabled:opacity-50 disabled:cursor-not-allowed min-w-[200px]"
+              className="btn-primary text-gray-100 disabled:opacity-50 disabled:cursor-not-allowed min-w-[200px]"
             >
               {isAnalyzing ? (
                 <span className="flex items-center gap-2">

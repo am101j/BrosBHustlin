@@ -26,10 +26,19 @@ function App() {
 
   return (
     <div className="min-h-screen w-screen flex flex-col md:flex-row bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-gray-100 font-sans overflow-hidden relative">
-      {/* Subtle background elements */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-slate-800/20 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-slate-700/20 rounded-full blur-3xl"></div>
+      {/* Animated ripple background */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
+        {/* Static gradient orbs */}
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl"></div>
+        <div className="absolute top-1/2 left-1/2 w-96 h-96 bg-pink-500/5 rounded-full blur-3xl"></div>
+        
+        {/* Animated ripples */}
+        <div className="absolute top-1/4 left-1/3 w-64 h-64 ripple ripple-1"></div>
+        <div className="absolute bottom-1/4 right-1/3 w-80 h-80 ripple ripple-2"></div>
+        <div className="absolute top-1/2 left-1/4 w-72 h-72 ripple ripple-3"></div>
+        <div className="absolute bottom-1/3 right-1/4 w-56 h-56 ripple ripple-1" style={{ animationDelay: '6s' }}></div>
+        <div className="absolute top-1/3 right-1/2 w-96 h-96 ripple ripple-2" style={{ animationDelay: '8s' }}></div>
       </div>
       
       {/* Side Progress Bar */}
@@ -58,9 +67,9 @@ function App() {
               </div>
               <span className={`text-xs text-center font-medium transition-all duration-300 ${
                 isActive 
-                  ? "text-gray-100 font-semibold" 
+                  ? "text-glow-cyan font-semibold" 
                   : isCompleted 
-                    ? "text-gray-300" 
+                    ? "text-glow-subtle" 
                     : "text-gray-500"
               }`}>
                 {step.name}
@@ -94,7 +103,7 @@ function App() {
                 >
                   <span className="text-xl">{step.icon}</span>
                 </div>
-                <span className={`text-[10px] text-center ${isActive ? "text-gray-100 font-semibold" : "text-gray-500"}`}>
+                <span className={`text-[10px] text-center ${isActive ? "text-glow-cyan font-semibold" : "text-gray-500"}`}>
                   {step.name.split(' ')[0]}
                 </span>
               </div>
@@ -106,10 +115,10 @@ function App() {
       {/* Main Content */}
       <main className="flex-1 flex flex-col justify-center items-center min-h-screen px-4 md:px-12 py-8 md:py-0 relative z-10">
         <header className="text-center mb-6 md:mb-8">
-          <h1 className="text-[clamp(2.5rem,8vw,5rem)] font-black text-gray-100 text-shadow-lg mb-3">
+          <h1 className="text-[clamp(2.5rem,8vw,5rem)] font-black text-glow-cyan mb-3">
             BrosBHustlin
           </h1>
-          <p className="text-gray-400 text-[clamp(1rem,2.5vw,1.5rem)] mt-2 font-light">
+          <p className="text-glow-subtle text-[clamp(1rem,2.5vw,1.5rem)] mt-2 font-light">
             Discover Your Finance Bro Energy
           </p>
         </header>
@@ -151,7 +160,7 @@ function App() {
                 />
                 <button
                   onClick={() => setCurrentStep("race")}
-                  className="btn-primary text-gray-100"
+                  className="btn-primary text-glow-body"
                 >
                   🏃 Race Your Genetics!
                 </button>
@@ -175,7 +184,7 @@ function App() {
                     setBuzzwords([]);
                     setCurrentStep("camera");
                   }}
-                  className="btn-secondary text-gray-100"
+                  className="btn-secondary text-glow-body"
                 >
                   ↻ Start Over
                 </button>

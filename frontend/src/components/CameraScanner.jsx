@@ -1,6 +1,93 @@
 import React, { useRef, useState, useEffect } from 'react'
 import Webcam from 'react-webcam'
 
+// Boo Notification Component for 0 points
+const BooNotification = ({ onComplete }) => {
+  const [isVisible, setIsVisible] = useState(false)
+
+  useEffect(() => {
+    // Play negative boo sound
+    const playBooSound = () => {
+      try {
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)()
+        const now = audioContext.currentTime
+        
+        // Create a descending "boo" sound - low, descending pitch
+        const booOsc = audioContext.createOscillator()
+        const booGain = audioContext.createGain()
+        booOsc.connect(booGain)
+        booGain.connect(audioContext.destination)
+        
+        // Start high and descend to low (disappointed sound)
+        booOsc.frequency.setValueAtTime(200, now)
+        booOsc.frequency.exponentialRampToValueAtTime(80, now + 0.5)
+        booOsc.type = 'sawtooth' // More harsh/negative
+        
+        booGain.gain.setValueAtTime(0, now)
+        booGain.gain.linearRampToValueAtTime(0.3, now + 0.05)
+        booGain.gain.exponentialRampToValueAtTime(0.01, now + 0.5)
+        
+        booOsc.start(now)
+        booOsc.stop(now + 0.5)
+        
+        // Add a second layer for more "boo" effect
+        const booOsc2 = audioContext.createOscillator()
+        const booGain2 = audioContext.createGain()
+        booOsc2.connect(booGain2)
+        booGain2.connect(audioContext.destination)
+        
+        booOsc2.frequency.setValueAtTime(150, now + 0.1)
+        booOsc2.frequency.exponentialRampToValueAtTime(60, now + 0.5)
+        booOsc2.type = 'square'
+        
+        booGain2.gain.setValueAtTime(0, now + 0.1)
+        booGain2.gain.linearRampToValueAtTime(0.2, now + 0.15)
+        booGain2.gain.exponentialRampToValueAtTime(0.01, now + 0.5)
+        
+        booOsc2.start(now + 0.1)
+        booOsc2.stop(now + 0.5)
+      } catch (err) {
+        console.log('Audio not available:', err)
+      }
+    }
+
+    // Show notification
+    setIsVisible(true)
+    playBooSound()
+
+    // Hide after animation
+    const timer = setTimeout(() => {
+      setIsVisible(false)
+      setTimeout(() => onComplete(), 300)
+    }, 2500)
+
+    return () => clearTimeout(timer)
+  }, [onComplete])
+
+  if (!isVisible) return null
+
+  return (
+    <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50 pointer-events-none">
+      <div className="animate-boo-popup">
+        <div className="bg-gradient-to-br from-red-900/90 via-red-800/90 to-red-900/90 border-4 border-red-500/80 rounded-2xl px-10 py-8 shadow-2xl shadow-red-500/50">
+          <div className="text-center animate-shake">
+            <div className="text-6xl mb-3">😢</div>
+            <div className="text-7xl font-gaming text-red-400 mb-2 drop-shadow-[0_0_10px_rgba(239,68,68,0.8)]">
+              0
+            </div>
+            <div className="text-3xl font-gaming text-red-500 mb-2">
+              BOO!
+            </div>
+            <div className="text-xl text-gray-300 font-gaming-sub tracking-wider uppercase">
+              No Items Detected
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 // Point Notification Component
 const PointNotification = ({ points, itemName, onComplete }) => {
   const [isVisible, setIsVisible] = useState(false)
@@ -114,6 +201,7 @@ const CameraScanner = ({ onComplete }) => {
   const [notifications, setNotifications] = useState([])
   const [currentNotificationIndex, setCurrentNotificationIndex] = useState(0)
   const [detectedItems, setDetectedItems] = useState([])
+  const [showBoo, setShowBoo] = useState(false)
 
   const capture = async () => {
     const imageSrc = webcamRef.current.getScreenshot()
@@ -139,8 +227,8 @@ const CameraScanner = ({ onComplete }) => {
           setDetectedItems(result.data.items)
           setCurrentNotificationIndex(0)
         } else {
-          // No items detected, complete immediately
-          onComplete(0, [])
+          // No items detected, show boo notification
+          setShowBoo(true)
         }
       } else {
         setError(result.error)
@@ -179,8 +267,16 @@ const CameraScanner = ({ onComplete }) => {
     }
   }, [currentNotificationIndex, detectedItems, onComplete])
 
+  const handleBooComplete = () => {
+    setShowBoo(false)
+    onComplete(0, [])
+  }
+
   return (
     <>
+      {/* Boo Notification for 0 points */}
+      {showBoo && <BooNotification onComplete={handleBooComplete} />}
+
       {/* Point Notifications */}
       {notifications.map((notification) => (
         <PointNotification
@@ -192,7 +288,7 @@ const CameraScanner = ({ onComplete }) => {
       ))}
 
       <div className="card w-full max-w-3xl">
-        <h2 className="text-4xl md:text-5xl font-bold mb-8 text-center text-gray-100 text-shadow-lg">
+        <h2 className="text-4xl md:text-5xl font-bold mb-8 text-center text-glow-cyan">
           📸 Visual Scanner
         </h2>
         
@@ -213,7 +309,7 @@ const CameraScanner = ({ onComplete }) => {
                 <div className="absolute inset-0 bg-black/50 flex items-center justify-center backdrop-blur-sm">
                   <div className="text-center">
                     <div className="text-6xl mb-4 animate-pulse">🔍</div>
-                    <div className="text-2xl font-bold text-white">Analyzing...</div>
+                    <div className="text-2xl font-bold text-glow-blue">Analyzing...</div>
                   </div>
                 </div>
               )}
@@ -221,14 +317,14 @@ const CameraScanner = ({ onComplete }) => {
           </div>
 
           <div className="text-center w-full">
-            <p className="mb-6 text-gray-300 text-lg font-medium max-w-2xl mx-auto">
+            <p className="mb-6 text-glow-body text-lg font-medium max-w-2xl mx-auto">
               Position yourself in frame and click capture to detect your finance bro items!
             </p>
             
             <button
               onClick={capture}
-              disabled={isAnalyzing || notifications.length > 0}
-              className="btn-primary text-gray-100 disabled:opacity-50 disabled:cursor-not-allowed min-w-[200px]"
+              disabled={isAnalyzing || notifications.length > 0 || showBoo}
+              className="btn-primary text-glow-body disabled:opacity-50 disabled:cursor-not-allowed min-w-[200px]"
             >
               {isAnalyzing ? (
                 <span className="flex items-center gap-2">

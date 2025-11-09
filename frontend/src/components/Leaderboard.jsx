@@ -73,76 +73,76 @@ const Leaderboard = () => {
       <div className="card w-full max-w-4xl">
         <div className="text-center py-12">
           <div className="text-6xl mb-4 animate-spin">⚙️</div>
-          <div className="text-xl font-medium text-gray-400">Loading leaderboard...</div>
+          <div className="text-xl font-medium text-glow-subtle">Loading leaderboard...</div>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="card w-full max-w-4xl">
-      <h2 className="text-4xl md:text-5xl font-bold mb-8 text-center text-gray-100 text-shadow-lg">
-        🏆 BrosBHustlin Leaderboard
-      </h2>
-      
-      <div className="mb-6 text-center">
-        <button
-          onClick={() => setShowSaveModal(true)}
-          className="btn-secondary text-gray-100"
-        >
-          💾 Save My Score
-        </button>
-      </div>
+      <div className="card w-full max-w-4xl">
+        <h2 className="text-4xl md:text-5xl font-bold mb-8 text-center text-glow-purple">
+          🏆 BrosBHustlin Leaderboard
+        </h2>
+        
+        <div className="mb-6 text-center">
+          <button
+            onClick={() => setShowSaveModal(true)}
+            className="btn-secondary text-glow-body"
+          >
+            💾 Save My Score
+          </button>
+        </div>
 
-      {scores.length === 0 ? (
-        <div className="text-center py-12 glass-strong rounded-xl">
-          <div className="text-6xl mb-4">📊</div>
-          <div className="text-xl font-medium text-gray-400">No scores yet. Be the first!</div>
-        </div>
-      ) : (
-        <div className="space-y-4">
-          {scores.map((score, index) => (
-            <div
-              key={score.id || index}
-              className={`flex items-center justify-between p-6 rounded-xl border-2 transition-all duration-300 hover:scale-[1.02] shadow-lg ${getRankStyle(index)}`}
-            >
-              <div className="flex items-center space-x-6">
-                <div className={`text-4xl font-black ${
-                  index === 0 ? 'text-gray-200' :
-                  index === 1 ? 'text-gray-300' :
-                  index === 2 ? 'text-gray-400' : 'text-gray-500'
-                }`}>
-                  #{score.rank || index + 1}
+        {scores.length === 0 ? (
+          <div className="text-center py-12 glass-strong rounded-xl">
+            <div className="text-6xl mb-4">📊</div>
+            <div className="text-xl font-medium text-glow-subtle">No scores yet. Be the first!</div>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {scores.map((score, index) => (
+              <div
+                key={score.id || index}
+                className={`flex items-center justify-between p-6 rounded-xl border-2 transition-all duration-300 hover:scale-[1.02] shadow-lg ${getRankStyle(index)}`}
+              >
+                <div className="flex items-center space-x-6">
+                  <div className={`text-4xl font-black ${
+                    index === 0 ? 'text-glow-cyan' :
+                    index === 1 ? 'text-glow-blue' :
+                    index === 2 ? 'text-glow-pink' : 'text-glow-subtle'
+                  }`}>
+                    #{score.rank || index + 1}
+                  </div>
+                  <div className="text-4xl filter drop-shadow-lg">{getTierEmoji(score.tier)}</div>
+                  <div>
+                    <div className="text-2xl font-bold mb-1 text-glow-body">{score.username}</div>
+                    <div className="text-sm text-glow-subtle font-medium">{score.tier}</div>
+                  </div>
                 </div>
-                <div className="text-4xl filter drop-shadow-lg">{getTierEmoji(score.tier)}</div>
-                <div>
-                  <div className="text-2xl font-bold mb-1 text-gray-100">{score.username}</div>
-                  <div className="text-sm text-gray-400 font-medium">{score.tier}</div>
+                <div className="text-right">
+                  <div className="text-4xl font-black text-glow-cyan mb-1">{score.total_score}</div>
+                  <div className="text-xs text-glow-subtle">
+                    {new Date(score.created_at).toLocaleDateString()}
+                  </div>
                 </div>
               </div>
-              <div className="text-right">
-                <div className="text-4xl font-black text-gray-100 mb-1">{score.total_score}</div>
-                <div className="text-xs text-gray-500">
-                  {new Date(score.created_at).toLocaleDateString()}
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
+            ))}
+          </div>
+        )}
 
       {/* Save Score Modal */}
       {showSaveModal && (
         <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="card-strong max-w-md w-full animate-fade-in">
-            <h3 className="text-2xl font-bold mb-6 text-gray-100 text-center">Save Your Score</h3>
+            <h3 className="text-2xl font-bold mb-6 text-glow-cyan text-center">Save Your Score</h3>
             <input
               type="text"
               placeholder="Enter your name"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               onKeyPress={(e) => e.key === 'Enter' && saveScore()}
-              className="w-full p-4 rounded-xl bg-slate-800/50 border border-slate-700/50 text-gray-100 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent mb-6"
+              className="w-full p-4 rounded-xl bg-slate-800/50 border border-slate-700/50 text-glow-body placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent mb-6"
               maxLength={20}
               autoFocus
             />
@@ -150,13 +150,13 @@ const Leaderboard = () => {
               <button
                 onClick={saveScore}
                 disabled={!username.trim()}
-                className="flex-1 btn-primary text-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex-1 btn-primary text-glow-body disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Save
               </button>
               <button
                 onClick={() => setShowSaveModal(false)}
-                className="flex-1 btn-secondary text-gray-100"
+                className="flex-1 btn-secondary text-glow-body"
               >
                 Cancel
               </button>

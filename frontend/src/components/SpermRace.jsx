@@ -124,7 +124,7 @@ const SpermRace = ({ broScore, onComplete }) => {
 
   return (
     <div className="card w-full max-w-4xl">
-      <h2 className="text-4xl md:text-5xl font-bold mb-8 text-center text-gray-100 text-shadow-lg">
+      <h2 className="text-4xl md:text-5xl font-bold mb-8 text-center text-glow-cyan">
         🏃 Sperm Race Championship
       </h2>
       
@@ -139,13 +139,13 @@ const SpermRace = ({ broScore, onComplete }) => {
 
       {!raceStarted ? (
         <div className="text-center space-y-6">
-          <p className="text-gray-300 text-lg font-medium max-w-2xl mx-auto">
+          <p className="text-glow-body text-lg font-medium max-w-2xl mx-auto">
             Your BrosBHustlin score determines your sperm's speed in this epic race! 
-            <span className="block mt-2 text-gray-200 font-bold">Score: {broScore}</span>
+            <span className="block mt-2 text-glow-cyan font-bold">Score: {broScore}</span>
           </p>
           <button
             onClick={startRace}
-            className="btn-primary text-gray-100"
+            className="btn-primary text-glow-body"
           >
             🏁 Start Race!
           </button>
@@ -153,7 +153,7 @@ const SpermRace = ({ broScore, onComplete }) => {
       ) : (
         <div className="text-center space-y-4">
           {commentary && !winner && (
-            <div className="glass-strong border-slate-600/50 text-gray-300 p-4 rounded-xl">
+            <div className="glass-strong border-slate-600/50 text-glow-body p-4 rounded-xl">
               <span className="text-2xl">📢</span> <span className="font-semibold">{commentary}</span>
             </div>
           )}
@@ -161,12 +161,12 @@ const SpermRace = ({ broScore, onComplete }) => {
           {winner && (
             <div className={`glass-strong p-6 rounded-xl border-2 ${
               winner === 'You' 
-                ? 'border-slate-500/50 text-gray-200' 
-                : 'border-slate-600/50 text-gray-300'
+                ? 'border-cyan-500/50 text-glow-cyan' 
+                : 'border-slate-600/50 text-glow-subtle'
             }`}>
               <div className="text-5xl mb-3">🏆</div>
-              <div className="text-3xl font-black mb-2">{winner} Wins!</div>
-              <div className="text-lg">
+              <div className={`text-3xl font-black mb-2 ${winner === 'You' ? 'text-glow-cyan' : 'text-glow-subtle'}`}>{winner} Wins!</div>
+              <div className={`text-lg ${winner === 'You' ? 'text-glow-body' : 'text-glow-subtle'}`}>
                 {winner === 'You' 
                   ? '🎉 Your BrosBHustlin paid off! 🎉' 
                   : 'Better luck next time! Keep grinding!'}

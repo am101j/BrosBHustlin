@@ -61,53 +61,68 @@ const Leaderboard = () => {
     }
   }
 
+  const getRankStyle = (index) => {
+    if (index === 0) return 'bg-slate-800/60 border-slate-600/70'
+    if (index === 1) return 'bg-slate-800/50 border-slate-700/60'
+    if (index === 2) return 'bg-slate-800/40 border-slate-700/50'
+    return 'glass-strong border-slate-700/50'
+  }
+
   if (loading) {
     return (
-      <div className="bg-gray-800 rounded-lg p-6">
-        <div className="text-center">Loading leaderboard...</div>
+      <div className="card w-full max-w-4xl">
+        <div className="text-center py-12">
+          <div className="text-6xl mb-4 animate-spin">⚙️</div>
+          <div className="text-xl font-medium text-gray-400">Loading leaderboard...</div>
+        </div>
       </div>
     )
   }
 
   return (
-    <div className="bg-gray-800 rounded-lg p-6">
-      <h2 className="text-3xl font-bold mb-6 text-center">🏆 BrosBHustlin Leaderboard</h2>
+    <div className="card w-full max-w-4xl">
+      <h2 className="text-4xl md:text-5xl font-bold mb-8 text-center text-gray-100 text-shadow-lg">
+        🏆 BrosBHustlin Leaderboard
+      </h2>
       
-      <div className="mb-4 text-center">
+      <div className="mb-6 text-center">
         <button
           onClick={() => setShowSaveModal(true)}
-          className="bg-blue-600 hover:bg-blue-700 px-6 py-2 rounded-lg"
+          className="btn-secondary text-gray-100"
         >
           💾 Save My Score
         </button>
       </div>
 
       {scores.length === 0 ? (
-        <div className="text-center text-gray-400">
-          No scores yet. Be the first!
+        <div className="text-center py-12 glass-strong rounded-xl">
+          <div className="text-6xl mb-4">📊</div>
+          <div className="text-xl font-medium text-gray-400">No scores yet. Be the first!</div>
         </div>
       ) : (
-        <div className="space-y-3">
+        <div className="space-y-4">
           {scores.map((score, index) => (
             <div
               key={score.id || index}
-              className={`flex items-center justify-between p-4 rounded-lg ${
-                index === 0 ? 'bg-yellow-600' : 
-                index === 1 ? 'bg-gray-600' : 
-                index === 2 ? 'bg-orange-600' : 'bg-gray-700'
-              }`}
+              className={`flex items-center justify-between p-6 rounded-xl border-2 transition-all duration-300 hover:scale-[1.02] shadow-lg ${getRankStyle(index)}`}
             >
-              <div className="flex items-center space-x-4">
-                <div className="text-2xl font-bold">#{score.rank}</div>
-                <div className="text-2xl">{getTierEmoji(score.tier)}</div>
+              <div className="flex items-center space-x-6">
+                <div className={`text-4xl font-black ${
+                  index === 0 ? 'text-gray-200' :
+                  index === 1 ? 'text-gray-300' :
+                  index === 2 ? 'text-gray-400' : 'text-gray-500'
+                }`}>
+                  #{score.rank || index + 1}
+                </div>
+                <div className="text-4xl filter drop-shadow-lg">{getTierEmoji(score.tier)}</div>
                 <div>
-                  <div className="font-bold">{score.username}</div>
-                  <div className="text-sm text-gray-300">{score.tier}</div>
+                  <div className="text-2xl font-bold mb-1 text-gray-100">{score.username}</div>
+                  <div className="text-sm text-gray-400 font-medium">{score.tier}</div>
                 </div>
               </div>
               <div className="text-right">
-                <div className="text-2xl font-bold">{score.total_score}</div>
-                <div className="text-sm text-gray-300">
+                <div className="text-4xl font-black text-gray-100 mb-1">{score.total_score}</div>
+                <div className="text-xs text-gray-500">
                   {new Date(score.created_at).toLocaleDateString()}
                 </div>
               </div>
@@ -118,28 +133,30 @@ const Leaderboard = () => {
 
       {/* Save Score Modal */}
       {showSaveModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-gray-800 p-6 rounded-lg max-w-md w-full mx-4">
-            <h3 className="text-xl font-bold mb-4">Save Your Score</h3>
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="card-strong max-w-md w-full animate-fade-in">
+            <h3 className="text-2xl font-bold mb-6 text-gray-100 text-center">Save Your Score</h3>
             <input
               type="text"
               placeholder="Enter your name"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              className="w-full p-3 rounded-lg bg-gray-700 text-white mb-4"
+              onKeyPress={(e) => e.key === 'Enter' && saveScore()}
+              className="w-full p-4 rounded-xl bg-slate-800/50 border border-slate-700/50 text-gray-100 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent mb-6"
               maxLength={20}
+              autoFocus
             />
             <div className="flex space-x-4">
               <button
                 onClick={saveScore}
                 disabled={!username.trim()}
-                className="flex-1 bg-green-600 hover:bg-green-700 disabled:bg-gray-600 py-2 rounded-lg"
+                className="flex-1 btn-primary text-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Save
               </button>
               <button
                 onClick={() => setShowSaveModal(false)}
-                className="flex-1 bg-gray-600 hover:bg-gray-700 py-2 rounded-lg"
+                className="flex-1 btn-secondary text-gray-100"
               >
                 Cancel
               </button>

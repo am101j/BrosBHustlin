@@ -37,55 +37,64 @@ const CameraScanner = ({ onComplete }) => {
   }
 
   return (
-    <div className="bg-gray-800 rounded-lg p-6">
-      <h2 className="text-3xl font-bold mb-6 text-center">📸 Camera Scanner</h2>
+    <div className="card w-full max-w-3xl">
+      <h2 className="text-4xl md:text-5xl font-bold mb-8 text-center text-gray-100 text-shadow-lg">
+        📸 Visual Scanner
+      </h2>
       
-      <div className="flex flex-col items-center space-y-6">
-        <div className="relative">
-          <Webcam
-            ref={webcamRef}
-            screenshotFormat="image/jpeg"
-            className="rounded-lg max-w-md"
-            videoConstraints={{
-              width: 640,
-              height: 480,
-              facingMode: "user"
-            }}
-          />
+      <div className="flex flex-col items-center space-y-8">
+        <div className="relative group">
+          <div className="relative rounded-2xl overflow-hidden border-2 border-slate-700/50">
+            <Webcam
+              ref={webcamRef}
+              screenshotFormat="image/jpeg"
+              className="rounded-2xl max-w-full h-auto"
+              videoConstraints={{
+                width: 640,
+                height: 480,
+                facingMode: "user"
+              }}
+            />
+            {isAnalyzing && (
+              <div className="absolute inset-0 bg-black/50 flex items-center justify-center backdrop-blur-sm">
+                <div className="text-center">
+                  <div className="text-6xl mb-4 animate-pulse">🔍</div>
+                  <div className="text-2xl font-bold text-white">Analyzing...</div>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
 
-        <div className="text-center">
-          <p className="mb-4 text-gray-300">
+        <div className="text-center w-full">
+          <p className="mb-6 text-gray-300 text-lg font-medium max-w-2xl mx-auto">
             Position yourself in frame and click capture to detect your finance bro items!
           </p>
           
           <button
             onClick={capture}
             disabled={isAnalyzing}
-            className="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 px-8 py-4 rounded-lg text-xl font-bold"
+            className="btn-primary text-gray-100 disabled:opacity-50 disabled:cursor-not-allowed min-w-[200px]"
           >
-            {isAnalyzing ? '🔍 Analyzing...' : '📸 Capture & Analyze'}
+            {isAnalyzing ? (
+              <span className="flex items-center gap-2">
+                <span className="animate-spin">⚙️</span>
+                <span>Analyzing...</span>
+              </span>
+            ) : (
+              <span className="flex items-center gap-2">
+                <span>📸</span>
+                <span>Capture & Analyze</span>
+              </span>
+            )}
           </button>
         </div>
 
         {error && (
-          <div className="bg-red-600 text-white p-4 rounded-lg">
-            {error}
+          <div className="glass-strong bg-red-500/20 border-red-500/50 text-red-200 p-4 rounded-xl w-full max-w-md text-center">
+            <span className="font-bold">⚠️</span> {error}
           </div>
         )}
-
-        <div className="text-sm text-gray-400 max-w-md">
-          <p className="font-semibold mb-2">Looking for:</p>
-          <ul className="space-y-1">
-            <li>• Patagonia vest/fleece (50 pts)</li>
-            <li>• Quarter-zip sweater (40 pts)</li>
-            <li>• Luxury watch (100 pts)</li>
-            <li>• AirPods (45 pts)</li>
-            <li>• Allbirds shoes (30 pts)</li>
-            <li>• Business casual attire (25 pts)</li>
-            <li>• MacBook Pro (20 pts)</li>
-          </ul>
-        </div>
       </div>
     </div>
   )

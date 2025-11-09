@@ -21,55 +21,84 @@ const SpermRace = ({ broScore, onComplete }) => {
     
     // Race setup
     const racers = [
-      { name: 'You', speed: (broScore / 1500) * 2 + Math.random() * 0.5, x: 50, color: '#3B82F6' },
-      { name: 'Chad', speed: 1.2 + Math.random() * 0.8, x: 50, color: '#EF4444' },
-      { name: 'Brad', speed: 1.0 + Math.random() * 0.8, x: 50, color: '#10B981' },
-      { name: 'Kyle', speed: 0.8 + Math.random() * 0.8, x: 50, color: '#F59E0B' }
+      { name: 'You', speed: (broScore / 1500) * 2 + Math.random() * 0.5, x: 50, color: '#06b6d4', glow: '#22d3ee' },
+      { name: 'Chad', speed: 1.2 + Math.random() * 0.8, x: 50, color: '#ef4444', glow: '#f87171' },
+      { name: 'Brad', speed: 1.0 + Math.random() * 0.8, x: 50, color: '#10b981', glow: '#34d399' },
+      { name: 'Kyle', speed: 0.8 + Math.random() * 0.8, x: 50, color: '#f59e0b', glow: '#fbbf24' }
     ]
     
     const finishLine = canvas.width - 100
     let raceFinished = false
     
     const animate = () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height)
+      // Clear with gradient background
+      const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height)
+      gradient.addColorStop(0, '#0f172a')
+      gradient.addColorStop(1, '#1e1b4b')
+      ctx.fillStyle = gradient
+      ctx.fillRect(0, 0, canvas.width, canvas.height)
       
-      // Draw finish line
-      ctx.strokeStyle = '#FFF'
-      ctx.lineWidth = 3
-      ctx.setLineDash([10, 5])
+      // Draw finish line with glow
+      ctx.shadowBlur = 20
+      ctx.shadowColor = '#fff'
+      ctx.strokeStyle = '#fff'
+      ctx.lineWidth = 4
+      ctx.setLineDash([15, 10])
       ctx.beginPath()
       ctx.moveTo(finishLine, 0)
       ctx.lineTo(finishLine, canvas.height)
       ctx.stroke()
       ctx.setLineDash([])
+      ctx.shadowBlur = 0
+      
+      // Draw finish text
+      ctx.fillStyle = '#fff'
+      ctx.font = 'bold 20px Arial'
+      ctx.textAlign = 'center'
+      ctx.fillText('FINISH', finishLine, 30)
       
       // Draw and move racers
       racers.forEach((racer, index) => {
-        const y = 80 + index * 80
+        const y = 80 + index * 100
         
         // Move racer
         if (!raceFinished) {
-          racer.x += racer.speed + Math.sin(Date.now() * 0.01) * 0.2
+          racer.x += racer.speed + Math.sin(Date.now() * 0.01 + index) * 0.3
         }
         
-        // Draw racer (simple sperm shape)
+        // Draw racer with glow effect
+        ctx.shadowBlur = 15
+        ctx.shadowColor = racer.color
+        
+        // Head
         ctx.fillStyle = racer.color
         ctx.beginPath()
-        ctx.arc(racer.x, y, 8, 0, Math.PI * 2)
+        ctx.arc(racer.x, y, 10, 0, Math.PI * 2)
         ctx.fill()
         
-        // Tail
+        // Tail with gradient
+        const tailGradient = ctx.createLinearGradient(racer.x - 50, y, racer.x - 10, y)
+        tailGradient.addColorStop(0, 'transparent')
+        tailGradient.addColorStop(1, racer.color)
+        
         ctx.strokeStyle = racer.color
-        ctx.lineWidth = 3
+        ctx.lineWidth = 4
+        ctx.lineCap = 'round'
         ctx.beginPath()
-        ctx.moveTo(racer.x - 8, y)
-        ctx.quadraticCurveTo(racer.x - 25, y - 10, racer.x - 40, y)
+        ctx.moveTo(racer.x - 10, y)
+        ctx.quadraticCurveTo(racer.x - 30, y - 15, racer.x - 50, y - 5)
+        ctx.quadraticCurveTo(racer.x - 40, y + 5, racer.x - 30, y)
         ctx.stroke()
         
-        // Name
-        ctx.fillStyle = '#FFF'
-        ctx.font = '14px Arial'
-        ctx.fillText(racer.name, racer.x - 20, y - 20)
+        ctx.shadowBlur = 0
+        
+        // Name with background
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.6)'
+        ctx.fillRect(racer.x - 35, y - 40, 70, 25)
+        ctx.fillStyle = '#fff'
+        ctx.font = 'bold 16px Arial'
+        ctx.textAlign = 'center'
+        ctx.fillText(racer.name, racer.x, y - 22)
         
         // Check for winner
         if (racer.x >= finishLine && !raceFinished) {
@@ -89,45 +118,59 @@ const SpermRace = ({ broScore, onComplete }) => {
 
   useEffect(() => {
     const canvas = canvasRef.current
-    canvas.width = 800
-    canvas.height = 400
+    canvas.width = 900
+    canvas.height = 500
   }, [])
 
   return (
-    <div className="bg-gray-800 rounded-lg p-6">
-      <h2 className="text-3xl font-bold mb-6 text-center">🏃♂️ Sperm Race Championship</h2>
+    <div className="card w-full max-w-4xl">
+      <h2 className="text-4xl md:text-5xl font-bold mb-8 text-center text-gray-100 text-shadow-lg">
+        🏃 Sperm Race Championship
+      </h2>
       
-      <div className="text-center mb-6">
-        <canvas
-          ref={canvasRef}
-          className="border border-gray-600 rounded-lg bg-gray-900 max-w-full"
-        />
+      <div className="text-center mb-8">
+        <div className="relative inline-block group">
+          <canvas
+            ref={canvasRef}
+            className="relative border-2 border-slate-700/50 rounded-2xl bg-gradient-to-br from-slate-950 to-slate-900 max-w-full shadow-2xl"
+          />
+        </div>
       </div>
 
       {!raceStarted ? (
-        <div className="text-center">
-          <p className="mb-4 text-gray-300">
-            Your BrosBHustlin determines your sperm's speed in this epic race!
+        <div className="text-center space-y-6">
+          <p className="text-gray-300 text-lg font-medium max-w-2xl mx-auto">
+            Your BrosBHustlin score determines your sperm's speed in this epic race! 
+            <span className="block mt-2 text-gray-200 font-bold">Score: {broScore}</span>
           </p>
           <button
             onClick={startRace}
-            className="bg-green-600 hover:bg-green-700 px-8 py-4 rounded-lg text-xl font-bold"
+            className="btn-primary text-gray-100"
           >
             🏁 Start Race!
           </button>
         </div>
       ) : (
-        <div className="text-center">
-          {commentary && (
-            <div className="bg-blue-600 text-white p-4 rounded-lg mb-4">
-              📢 {commentary}
+        <div className="text-center space-y-4">
+          {commentary && !winner && (
+            <div className="glass-strong border-slate-600/50 text-gray-300 p-4 rounded-xl">
+              <span className="text-2xl">📢</span> <span className="font-semibold">{commentary}</span>
             </div>
           )}
           
           {winner && (
-            <div className="bg-green-600 text-white p-4 rounded-lg">
-              🏆 {winner} wins the race! 
-              {winner === 'You' ? ' Your BrosBHustlin paid off!' : ' Better luck next time!'}
+            <div className={`glass-strong p-6 rounded-xl border-2 ${
+              winner === 'You' 
+                ? 'border-slate-500/50 text-gray-200' 
+                : 'border-slate-600/50 text-gray-300'
+            }`}>
+              <div className="text-5xl mb-3">🏆</div>
+              <div className="text-3xl font-black mb-2">{winner} Wins!</div>
+              <div className="text-lg">
+                {winner === 'You' 
+                  ? '🎉 Your BrosBHustlin paid off! 🎉' 
+                  : 'Better luck next time! Keep grinding!'}
+              </div>
             </div>
           )}
         </div>

@@ -6,27 +6,68 @@ const PointNotification = ({ points, itemName, onComplete }) => {
   const [isVisible, setIsVisible] = useState(false)
 
   useEffect(() => {
-    // Play sound
-    const playSound = () => {
+    // Play energetic game-like sound
+    const playGameSound = () => {
       try {
-        // Create a simple coin/ding sound using Web Audio API
         const audioContext = new (window.AudioContext || window.webkitAudioContext)()
-        const oscillator = audioContext.createOscillator()
-        const gainNode = audioContext.createGain()
         
-        oscillator.connect(gainNode)
-        gainNode.connect(audioContext.destination)
+        // Create a more complex, energetic coin collection sound
+        // Multiple oscillators for richer sound
+        const duration = 0.4
+        const now = audioContext.currentTime
         
-        // Higher pitch for higher points
-        const frequency = 400 + (points * 2)
-        oscillator.frequency.value = frequency
-        oscillator.type = 'sine'
+        // Main coin sound - ascending pitch
+        const mainOsc = audioContext.createOscillator()
+        const mainGain = audioContext.createGain()
+        mainOsc.connect(mainGain)
+        mainGain.connect(audioContext.destination)
         
-        gainNode.gain.setValueAtTime(0.3, audioContext.currentTime)
-        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3)
+        // Base frequency scales with points (higher points = higher pitch)
+        const baseFreq = 300 + (points * 3)
+        mainOsc.frequency.setValueAtTime(baseFreq, now)
+        mainOsc.frequency.exponentialRampToValueAtTime(baseFreq * 1.8, now + duration)
+        mainOsc.type = 'square' // More game-like
         
-        oscillator.start(audioContext.currentTime)
-        oscillator.stop(audioContext.currentTime + 0.3)
+        mainGain.gain.setValueAtTime(0, now)
+        mainGain.gain.linearRampToValueAtTime(0.4, now + 0.01)
+        mainGain.gain.exponentialRampToValueAtTime(0.01, now + duration)
+        
+        mainOsc.start(now)
+        mainOsc.stop(now + duration)
+        
+        // Add a sparkle/high frequency layer for extra energy
+        const sparkleOsc = audioContext.createOscillator()
+        const sparkleGain = audioContext.createGain()
+        sparkleOsc.connect(sparkleGain)
+        sparkleGain.connect(audioContext.destination)
+        
+        sparkleOsc.frequency.setValueAtTime(baseFreq * 3, now)
+        sparkleOsc.frequency.exponentialRampToValueAtTime(baseFreq * 5, now + duration * 0.5)
+        sparkleOsc.type = 'sine'
+        
+        sparkleGain.gain.setValueAtTime(0, now)
+        sparkleGain.gain.linearRampToValueAtTime(0.2, now + 0.01)
+        sparkleGain.gain.exponentialRampToValueAtTime(0.01, now + duration * 0.5)
+        
+        sparkleOsc.start(now)
+        sparkleOsc.stop(now + duration * 0.5)
+        
+        // Add a low frequency "thump" for impact
+        if (points >= 50) {
+          const thumpOsc = audioContext.createOscillator()
+          const thumpGain = audioContext.createGain()
+          thumpOsc.connect(thumpGain)
+          thumpGain.connect(audioContext.destination)
+          
+          thumpOsc.frequency.setValueAtTime(80, now)
+          thumpOsc.type = 'sawtooth'
+          
+          thumpGain.gain.setValueAtTime(0.15, now)
+          thumpGain.gain.exponentialRampToValueAtTime(0.01, now + 0.2)
+          
+          thumpOsc.start(now)
+          thumpOsc.stop(now + 0.2)
+        }
       } catch (err) {
         console.log('Audio not available:', err)
       }
@@ -34,13 +75,13 @@ const PointNotification = ({ points, itemName, onComplete }) => {
 
     // Show notification
     setIsVisible(true)
-    playSound()
+    playGameSound()
 
     // Hide after animation
     const timer = setTimeout(() => {
       setIsVisible(false)
       setTimeout(() => onComplete(), 300) // Wait for fade out
-    }, 2000)
+    }, 2500)
 
     return () => clearTimeout(timer)
   }, [points, onComplete])
@@ -50,13 +91,13 @@ const PointNotification = ({ points, itemName, onComplete }) => {
   return (
     <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50 pointer-events-none">
       <div className="animate-point-popup">
-        <div className="bg-gradient-to-br from-slate-700 to-slate-800 border-2 border-slate-500 rounded-2xl px-8 py-6 shadow-2xl">
+        <div className="bg-gradient-to-br from-slate-800 via-slate-700 to-slate-800 border-4 border-yellow-400/80 rounded-2xl px-10 py-8 shadow-2xl shadow-yellow-500/50">
           <div className="text-center">
-            <div className="text-5xl mb-2">✨</div>
-            <div className="text-6xl font-black text-green-400 mb-1">
+            <div className="text-6xl mb-3 animate-bounce">✨</div>
+            <div className="text-7xl font-gaming text-yellow-400 mb-2 animate-flicker drop-shadow-[0_0_10px_rgba(250,204,21,0.8)]">
               +{points}
             </div>
-            <div className="text-lg text-gray-300 font-semibold">
+            <div className="text-xl text-gray-200 font-gaming-sub tracking-wider uppercase">
               {itemName}
             </div>
           </div>

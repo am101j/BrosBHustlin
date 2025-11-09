@@ -85,7 +85,7 @@ def analyze_image():
         score = 0
         
         # YOLO detection with confidence threshold
-        results = yolo(temp_path, conf=0.3)[0]  # 25% confidence threshold - optimal for trained model
+        results = yolo(temp_path, conf=0.25)[0]  # 20% confidence threshold - better for small items like AirPods
         
         if len(results.boxes) > 0:
             classes = [results.names[int(cls)] for cls in results.boxes.cls]

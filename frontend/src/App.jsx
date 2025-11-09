@@ -4,6 +4,7 @@ import VoiceAnalyzer from "./components/VoiceAnalyzer";
 import BroScoreDisplay from "./components/BroScoreDisplay";
 import SpermRace from "./components/SpermRace";
 import Leaderboard from "./components/Leaderboard";
+import PowerUpShop from "./components/PowerUpShop";
 
 function App() {
   const [cameraScore, setCameraScore] = useState(0);
@@ -11,13 +12,26 @@ function App() {
   const [detectedItems, setDetectedItems] = useState([]);
   const [buzzwords, setBuzzwords] = useState([]);
   const [currentStep, setCurrentStep] = useState("camera");
+  const [purchasedPowerUps, setPurchasedPowerUps] = useState({});
+  const [shopPoints, setShopPoints] = useState(0);
 
   const totalScore = cameraScore + voiceScore;
+
+  const getTier = (score) => {
+    if (score <= 79) return "Peasant"
+    if (score <= 159) return "Analyst"
+    if (score <= 239) return "Associate"
+    if (score <= 319) return "VP of Cringe"
+    return "CEO of Insufferable"
+  }
+
+  const tier = getTier(totalScore)
 
   const steps = [
     { id: "camera", name: "Visual Scan", icon: "📸" },
     { id: "voice", name: "Voice Analysis", icon: "🎤" },
     { id: "results", name: "Results", icon: "📊" },
+    { id: "shop", name: "Shop", icon: "🛒" },
     { id: "race", name: "Competition", icon: "🏃" },
     { id: "leaderboard", name: "Leaderboard", icon: "🏆" },
   ];
@@ -167,29 +181,73 @@ function App() {
                   buzzwords={buzzwords}
                 />
                 <button
+                  onClick={() => {
+                    setShopPoints(totalScore);
+                    setCurrentStep("shop");
+                  }}
+                  className="btn-primary text-gray-100"
+                >
+                  🛒 Buy Power-Ups
+                </button>
+                <button
+                  onClick={() => setCurrentStep("race")}
+                  className="btn-secondary text-gray-100"
+                >
+                  🏃 Skip to Race
+                </button>
+              </div>
+            )}
+
+            {currentStep === "shop" && (
+              <div className="w-full flex flex-col items-center justify-center space-y-6">
+                <PowerUpShop
+                  availablePoints={shopPoints}
+                  purchasedPowerUps={purchasedPowerUps}
+                  onPurchase={(powerUpId, cost) => {
+                    setPurchasedPowerUps(prev => ({
+                      ...prev,
+                      [powerUpId]: (prev[powerUpId] || 0) + 1
+                    }));
+                    setShopPoints(prev => prev - cost);
+                  }}
+                />
+                <button
                   onClick={() => setCurrentStep("race")}
                   className="btn-primary text-gray-100"
                 >
-                  🏃 Race Your Genetics!
+                  🏁 Start Race!
                 </button>
               </div>
             )}
 
             {currentStep === "race" && (
               <div className="w-full flex items-center justify-center">
-                <SpermRace broScore={totalScore} onComplete={() => setCurrentStep("leaderboard")} />
+                <SpermRace 
+                  broScore={totalScore} 
+                  purchasedPowerUps={purchasedPowerUps}
+                  onComplete={() => setCurrentStep("leaderboard")} 
+                />
               </div>
             )}
 
             {currentStep === "leaderboard" && (
               <div className="w-full flex flex-col items-center justify-center space-y-8">
-                <Leaderboard />
+                <Leaderboard 
+                  totalScore={totalScore}
+                  cameraScore={cameraScore}
+                  voiceScore={voiceScore}
+                  detectedItems={detectedItems}
+                  buzzwords={buzzwords}
+                  tier={tier}
+                />
                 <button
                   onClick={() => {
                     setCameraScore(0);
                     setVoiceScore(0);
                     setDetectedItems([]);
                     setBuzzwords([]);
+                    setPurchasedPowerUps({});
+                    setShopPoints(0);
                     setCurrentStep("camera");
                   }}
                   className="btn-secondary text-gray-100"

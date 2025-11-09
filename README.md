@@ -42,27 +42,27 @@ npm run dev
 
 ## Scoring
 
-### Visual Items
-- Patagonia vest/fleece: 50 pts
-- Quarter-zip sweater: 40 pts  
-- Luxury watch: 100 pts
-- AirPods: 45 pts
-- Allbirds shoes: 30 pts
-- Business casual: 25 pts
-- MacBook Pro: 20 pts
+### Visual Items (Max 200 pts)
+- Luxury watch: 60 pts
+- Patagonia vest/fleece: 40 pts
+- AirPods: 35 pts
+- Quarter-zip sweater: 30 pts  
+- Allbirds shoes: 20 pts
+- Business casual: 15 pts
+- MacBook Pro: 10 pts
 
-### Voice Buzzwords (25 pts each)
+### Voice Buzzwords (25 pts each, Max 200 pts)
 - "circle back", "synergize", "hop on a call"
 - "take offline", "touch base", "ping you"
 - "bandwidth", "move needle", "deep dive"
 - And more corporate speak...
 
 ### Tiers
-- 0-199: "Peasant" 🥔
-- 200-399: "Analyst" 📊  
-- 400-599: "Associate" 💼
-- 600-799: "VP of Cringe" 😬
-- 800-1000: "CEO of Insufferable" 👑
+- 0-79: "Peasant" 🥔
+- 80-159: "Analyst" 📊  
+- 160-239: "Associate" 💼
+- 240-319: "VP of Cringe" 😬
+- 320-400: "CEO of Insufferable" 👑
 
 ## Demo
 

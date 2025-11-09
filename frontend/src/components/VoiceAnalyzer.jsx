@@ -211,7 +211,7 @@ const VoiceAnalyzer = ({ onComplete }) => {
         } else {
           // All notifications shown, complete the flow
           const totalScore = detectedBuzzwords.reduce((sum, bw) => sum + bw.points, 0)
-          onComplete(Math.min(totalScore, 500), detectedBuzzwords) // Cap at 500 as per backend
+          onComplete(Math.min(totalScore, 200), detectedBuzzwords) // Cap at 200 as per backend
           setNotifications([])
           setCurrentNotificationIndex(0)
           setDetectedBuzzwords([])

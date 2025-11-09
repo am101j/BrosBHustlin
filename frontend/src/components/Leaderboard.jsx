@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 
-const Leaderboard = () => {
+const Leaderboard = ({ totalScore, cameraScore, voiceScore, detectedItems, buzzwords, tier }) => {
   const [scores, setScores] = useState([])
   const [loading, setLoading] = useState(true)
   const [showSaveModal, setShowSaveModal] = useState(false)
@@ -32,22 +32,25 @@ const Leaderboard = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           username: username.trim(),
-          total_score: 0, // This would come from parent component
-          camera_score: 0,
-          voice_score: 0,
-          tier: 'Peasant',
-          detected_items: [],
-          buzzwords: []
+          total_score: totalScore || 0,
+          camera_score: cameraScore || 0,
+          voice_score: voiceScore || 0,
+          tier: tier || 'Peasant',
+          detected_items: detectedItems || [],
+          buzzwords: buzzwords || []
         })
       })
 
-      if (response.ok) {
+      const result = await response.json()
+      if (result.success) {
         setShowSaveModal(false)
         setUsername('')
         fetchLeaderboard()
+      } else {
+        console.error('Failed to save score:', result.error)
       }
     } catch (err) {
-      console.error('Failed to save score')
+      console.error('Failed to save score:', err)
     }
   }
 
@@ -85,14 +88,20 @@ const Leaderboard = () => {
         🏆 BrosBHustlin Leaderboard
       </h2>
       
-      <div className="mb-6 text-center">
-        <button
-          onClick={() => setShowSaveModal(true)}
-          className="btn-secondary text-gray-100"
-        >
-          💾 Save My Score
-        </button>
-      </div>
+      {(totalScore > 0) && (
+        <div className="mb-6 text-center">
+          <div className="glass-strong rounded-xl p-4 mb-4 border-cyan-500/30">
+            <div className="text-2xl font-bold text-cyan-300 mb-1">Your Score: {totalScore}</div>
+            <div className="text-sm text-gray-400">Tier: {tier || 'Peasant'}</div>
+          </div>
+          <button
+            onClick={() => setShowSaveModal(true)}
+            className="btn-primary text-gray-100"
+          >
+            💾 Save My Score
+          </button>
+        </div>
+      )}
 
       {scores.length === 0 ? (
         <div className="text-center py-12 glass-strong rounded-xl">

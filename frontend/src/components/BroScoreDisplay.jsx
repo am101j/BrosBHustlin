@@ -2,21 +2,21 @@ import React from 'react'
 
 const BroScoreDisplay = ({ cameraScore, voiceScore, totalScore, detectedItems, buzzwords }) => {
   const getTier = (score) => {
-    if (score <= 199) return { name: "Peasant", color: "from-gray-400 to-gray-500", emoji: "🥔", glow: "shadow-gray-500/50" }
-    if (score <= 399) return { name: "Analyst", color: "from-blue-400 to-cyan-400", emoji: "📊", glow: "shadow-blue-500/50" }
-    if (score <= 599) return { name: "Associate", color: "from-green-400 to-emerald-400", emoji: "💼", glow: "shadow-green-500/50" }
-    if (score <= 799) return { name: "VP of Cringe", color: "from-yellow-400 to-orange-400", emoji: "😬", glow: "shadow-yellow-500/50" }
+    if (score <= 79) return { name: "Peasant", color: "from-gray-400 to-gray-500", emoji: "🥔", glow: "shadow-gray-500/50" }
+    if (score <= 159) return { name: "Analyst", color: "from-blue-400 to-cyan-400", emoji: "📊", glow: "shadow-blue-500/50" }
+    if (score <= 239) return { name: "Associate", color: "from-green-400 to-emerald-400", emoji: "💼", glow: "shadow-green-500/50" }
+    if (score <= 319) return { name: "VP of Cringe", color: "from-yellow-400 to-orange-400", emoji: "😬", glow: "shadow-yellow-500/50" }
     return { name: "CEO of Insufferable", color: "from-red-400 to-pink-500", emoji: "👑", glow: "shadow-red-500/50" }
   }
 
   const tier = getTier(totalScore)
-  const scorePercentage = (totalScore / 1000) * 100
+  const scorePercentage = (totalScore / 400) * 100
 
   const getTierColor = (score) => {
-    if (score <= 199) return "text-gray-400"
-    if (score <= 399) return "text-blue-400"
-    if (score <= 599) return "text-cyan-400"
-    if (score <= 799) return "text-pink-400"
+    if (score <= 79) return "text-gray-400"
+    if (score <= 159) return "text-blue-400"
+    if (score <= 239) return "text-cyan-400"
+    if (score <= 319) return "text-pink-400"
     return "text-purple-400"
   }
 
@@ -94,7 +94,7 @@ const BroScoreDisplay = ({ cameraScore, voiceScore, totalScore, detectedItems, b
       <div className="text-center">
         <div className="glass-strong rounded-xl p-6 border-2 border-cyan-500/30">
           <div className="text-3xl font-bold mb-2 text-cyan-300">
-            Total BrosBHustlin: {totalScore} / 1000
+            Total BrosBHustlin: {totalScore} / 400
           </div>
           <div className="text-sm text-gray-400 mt-2 font-medium">
             📸 {cameraScore} + 🎤 {voiceScore} = {totalScore}

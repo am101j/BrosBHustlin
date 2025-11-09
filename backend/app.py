@@ -26,7 +26,7 @@ from datetime import datetime
 import uuid
 
 app = Flask(__name__)
-CORS(app, origins=['http://localhost:3000', 'http://127.0.0.1:3000'], 
+CORS(app, origins=['http://localhost:3000', 'http://127.0.0.1:3000', 'http://localhost:5173', 'http://127.0.0.1:5173'], 
      methods=['GET', 'POST', 'OPTIONS'],
      allow_headers=['Content-Type', 'Authorization'])
 
@@ -61,10 +61,10 @@ def init_db():
 init_db()
 
 def get_bro_tier(score):
-    if score <= 199: return "Peasant"
-    elif score <= 399: return "Analyst"
-    elif score <= 599: return "Associate"
-    elif score <= 799: return "VP of Cringe"
+    if score <= 79: return "Peasant"
+    elif score <= 159: return "Analyst"
+    elif score <= 239: return "Associate"
+    elif score <= 319: return "VP of Cringe"
     else: return "CEO of Insufferable"
 
 @app.route('/api/analyze-image', methods=['POST'])
@@ -100,14 +100,15 @@ def analyze_image():
             print("YOLO: No detections above confidence threshold")
         
         # Custom trained model scoring - YOLO only
+        # Total max camera: 200 pts (so 200 camera + 200 voice = 400 total)
         bro_items = {
-            'patagonia_vest': 50,
-            'quarter_zip_sweater': 40,
-            'luxury_watch': 100,
-            'airpods': 45,
-            'allbirds_shoes': 30,
-            'business_shirt': 25,
-            'macbook_pro': 20
+            'patagonia_vest': 40,
+            'quarter_zip_sweater': 30,
+            'luxury_watch': 60,
+            'airpods': 35,
+            'allbirds_shoes': 20,
+            'business_shirt': 15,
+            'macbook_pro': 10
         }
         
         for class_name in classes:
@@ -115,7 +116,10 @@ def analyze_image():
                 points = bro_items[class_name]
                 detected.append({"name": class_name.replace('_', ' ').title(), "points": points})
                 score += points
-            
+        
+        # Cap camera score at 200
+        score = min(score, 200)
+        
         os.remove(temp_path)
         
         return jsonify({
@@ -169,7 +173,7 @@ def analyze_voice():
         return jsonify({
             'success': True,
             'data': {
-                'score': min(score, 500),  # Max 500 points
+                'score': min(score, 200),  # Max 200 points (200 camera + 200 voice = 400 total)
                 'buzzwords': detected_buzzwords,
                 'transcription': transcription
             }
@@ -206,17 +210,18 @@ def get_leaderboard():
         conn = sqlite3.connect('broski.db')
         c = conn.cursor()
         
-        c.execute('''SELECT username, total_score, tier, created_at 
+        c.execute('''SELECT id, username, total_score, tier, created_at 
                      FROM leaderboard ORDER BY total_score DESC LIMIT 10''')
         
         results = []
         for i, row in enumerate(c.fetchall()):
             results.append({
+                'id': row[0],
                 'rank': i + 1,
-                'username': row[0],
-                'total_score': row[1],
-                'tier': row[2],
-                'created_at': row[3]
+                'username': row[1],
+                'total_score': row[2],
+                'tier': row[3],
+                'created_at': row[4]
             })
         
         conn.close()

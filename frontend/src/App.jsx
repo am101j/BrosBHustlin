@@ -19,11 +19,11 @@ function App() {
   const totalScore = cameraScore + voiceScore;
 
   const getTier = (score) => {
-    if (score <= 79) return "Peasant"
-    if (score <= 159) return "Analyst"
-    if (score <= 239) return "Associate"
-    if (score <= 319) return "VP of Cringe"
-    return "CEO of Insufferable"
+    if (score <= 79) return "Intern"
+    if (score <= 159) return "Junior Analyst"
+    if (score <= 239) return "Senior Associate"
+    if (score <= 319) return "Vice President"
+    return "Managing Director"
   }
 
   const tier = getTier(totalScore)

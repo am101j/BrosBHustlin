@@ -202,11 +202,13 @@ const CameraScanner = ({ onComplete }) => {
   const [currentNotificationIndex, setCurrentNotificationIndex] = useState(0)
   const [detectedItems, setDetectedItems] = useState([])
   const [showBoo, setShowBoo] = useState(false)
+  const [capturedImage, setCapturedImage] = useState(null)
 
   const capture = async () => {
     const imageSrc = webcamRef.current.getScreenshot()
     if (!imageSrc) return
 
+    setCapturedImage(imageSrc)
     setIsAnalyzing(true)
     setError('')
 
@@ -251,6 +253,7 @@ const CameraScanner = ({ onComplete }) => {
         } else {
           // All notifications shown, complete the flow
           const totalScore = detectedItems.reduce((sum, item) => sum + item.points, 0)
+          setCapturedImage(null)
           onComplete(totalScore, detectedItems)
           setNotifications([])
           setCurrentNotificationIndex(0)
@@ -269,6 +272,7 @@ const CameraScanner = ({ onComplete }) => {
 
   const handleBooComplete = () => {
     setShowBoo(false)
+    setCapturedImage(null)
     onComplete(0, [])
   }
 
@@ -294,17 +298,25 @@ const CameraScanner = ({ onComplete }) => {
         
         <div className="flex flex-col items-center space-y-6">
           <div className="relative group w-full">
-            <div className="relative rounded-xl overflow-hidden border border-slate-700/50 shadow-inner">
-              <Webcam
-                ref={webcamRef}
-                screenshotFormat="image/jpeg"
-                className="rounded-xl max-w-full h-auto block"
-                videoConstraints={{
-                  width: 640,
-                  height: 480,
-                  facingMode: "user"
-                }}
-              />
+            <div className="relative rounded-xl overflow-hidden border border-slate-700/50 shadow-inner h-96 md:h-[480px]">
+              {capturedImage ? (
+                <img 
+                  src={capturedImage} 
+                  alt="Captured" 
+                  className="rounded-xl w-full h-full object-cover"
+                />
+              ) : (
+                <Webcam
+                  ref={webcamRef}
+                  screenshotFormat="image/jpeg"
+                  className="rounded-xl w-full h-full object-cover"
+                  videoConstraints={{
+                    width: { ideal: 1280 },
+                    height: { ideal: 720 },
+                    facingMode: "user"
+                  }}
+                />
+              )}
               {isAnalyzing && (
                 <div className="absolute inset-0 bg-black/50 flex items-center justify-center backdrop-blur-sm">
                   <div className="text-center">

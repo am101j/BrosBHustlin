@@ -337,6 +337,56 @@ const SpermRace = ({ broScore, purchasedPowerUps, onComplete }) => {
     particlesRef.current = []
     setActivePowerUps({})
     
+    // Play race music
+    try {
+      const audioContext = new (window.AudioContext || window.webkitAudioContext)()
+      const playRaceMusic = () => {
+        const now = audioContext.currentTime
+        const duration = 0.5
+        
+        // Create energetic racing beat
+        const bass = audioContext.createOscillator()
+        const bassGain = audioContext.createGain()
+        bass.connect(bassGain)
+        bassGain.connect(audioContext.destination)
+        
+        bass.frequency.setValueAtTime(80, now)
+        bass.type = 'sawtooth'
+        bassGain.gain.setValueAtTime(0.3, now)
+        bassGain.gain.exponentialRampToValueAtTime(0.01, now + duration)
+        
+        bass.start(now)
+        bass.stop(now + duration)
+        
+        // Add melody
+        const melody = audioContext.createOscillator()
+        const melodyGain = audioContext.createGain()
+        melody.connect(melodyGain)
+        melodyGain.connect(audioContext.destination)
+        
+        const notes = [220, 247, 262, 294, 330] // Racing melody
+        const noteIndex = Math.floor(Math.random() * notes.length)
+        melody.frequency.setValueAtTime(notes[noteIndex], now)
+        melody.type = 'square'
+        melodyGain.gain.setValueAtTime(0.2, now)
+        melodyGain.gain.exponentialRampToValueAtTime(0.01, now + duration * 0.7)
+        
+        melody.start(now + 0.1)
+        melody.stop(now + duration)
+      }
+      
+      // Play music every 800ms during race
+      const musicInterval = setInterval(() => {
+        if (!raceFinishedRef.current) {
+          playRaceMusic()
+        } else {
+          clearInterval(musicInterval)
+        }
+      }, 800)
+    } catch (err) {
+      console.log('Audio not available:', err)
+    }
+    
     const canvas = canvasRef.current
     const ctx = canvas.getContext('2d')
     
@@ -350,8 +400,8 @@ const SpermRace = ({ broScore, purchasedPowerUps, onComplete }) => {
     racersRef.current = [
       { 
         name: 'You', 
-        speed: Math.max(0.5, (broScore / 400) * 2 + Math.random() * 0.5),
-        baseSpeed: Math.max(0.5, (broScore / 400) * 2),
+        speed: Math.max(1.05, (broScore / 400) * 2.8 + Math.random() * 1.05),
+        baseSpeed: Math.max(1.05, (broScore / 400) * 2.8),
         x: 50, 
         y: lanes[0],
         color: '#06b6d4', 
@@ -742,22 +792,26 @@ const SpermRace = ({ broScore, purchasedPowerUps, onComplete }) => {
           setWinner(racer.name)
           createParticles(racer.x, racer.y, racer.color)
           
-          // Play win sound
+          // Play victory fanfare
           try {
             const audioContext = new (window.AudioContext || window.webkitAudioContext)()
             const now = audioContext.currentTime
-            const osc = audioContext.createOscillator()
-            const gain = audioContext.createGain()
-            osc.connect(gain)
-            gain.connect(audioContext.destination)
             
-            osc.frequency.setValueAtTime(400, now)
-            osc.frequency.exponentialRampToValueAtTime(800, now + 0.3)
-            osc.type = 'sine'
-            gain.gain.setValueAtTime(0.3, now)
-            gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3)
-            osc.start(now)
-            osc.stop(now + 0.3)
+            // Victory melody
+            const notes = [523, 659, 784, 1047] // C5, E5, G5, C6
+            notes.forEach((freq, i) => {
+              const osc = audioContext.createOscillator()
+              const gain = audioContext.createGain()
+              osc.connect(gain)
+              gain.connect(audioContext.destination)
+              
+              osc.frequency.setValueAtTime(freq, now + i * 0.2)
+              osc.type = 'sine'
+              gain.gain.setValueAtTime(0.3, now + i * 0.2)
+              gain.gain.exponentialRampToValueAtTime(0.01, now + i * 0.2 + 0.3)
+              osc.start(now + i * 0.2)
+              osc.stop(now + i * 0.2 + 0.3)
+            })
           } catch (err) {
             console.log('Audio not available')
           }
@@ -834,18 +888,30 @@ const SpermRace = ({ broScore, purchasedPowerUps, onComplete }) => {
   }, [])
 
   return (
-    <div className="card w-full max-w-4xl">
-      <h2 className="text-3xl md:text-4xl font-bold mb-6 text-center text-cyan-300">
-        🏃 Sperm Race Championship
-      </h2>
+    <div className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 border border-amber-500/30 rounded-2xl p-8 shadow-2xl w-full max-w-4xl backdrop-blur-sm">
+      <div className="text-center mb-8">
+        <div className="inline-flex items-center gap-3 mb-4">
+          <div className="w-12 h-12 bg-gradient-to-br from-amber-400 to-amber-600 rounded-full flex items-center justify-center shadow-lg">
+            <span className="text-2xl">👑</span>
+          </div>
+          <h2 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-amber-300 via-yellow-300 to-amber-300 bg-clip-text text-transparent">
+            Royal Championship
+          </h2>
+          <div className="w-12 h-12 bg-gradient-to-br from-amber-400 to-amber-600 rounded-full flex items-center justify-center shadow-lg">
+            <span className="text-2xl">👑</span>
+          </div>
+        </div>
+        <div className="h-px bg-gradient-to-r from-transparent via-amber-400 to-transparent w-full max-w-md mx-auto"></div>
+      </div>
       
       {/* Countdown overlay */}
       {countdown && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="text-center">
-            <div className="text-9xl md:text-[12rem] font-black text-cyan-300 animate-pulse drop-shadow-2xl">
+        <div className="fixed inset-0 bg-black/90 backdrop-blur-md flex items-center justify-center z-50">
+          <div className="text-center bg-gradient-to-br from-slate-900/90 to-slate-800/90 border-2 border-amber-400/50 rounded-3xl p-12 shadow-2xl">
+            <div className="text-8xl md:text-[10rem] font-bold bg-gradient-to-r from-amber-300 via-yellow-300 to-amber-300 bg-clip-text text-transparent animate-pulse drop-shadow-2xl">
               {countdown}
             </div>
+            <div className="text-amber-400 text-2xl font-bold mt-4 tracking-wider animate-pulse">🔥 LOCK IN 🔥</div>
           </div>
         </div>
       )}
@@ -861,16 +927,20 @@ const SpermRace = ({ broScore, purchasedPowerUps, onComplete }) => {
 
       {/* Power-Up Controls */}
       {raceStarted && !raceFinishedRef.current && Object.keys(availablePowerUps).some(key => availablePowerUps[key] > 0) && (
-        <div className="mb-4 glass-strong rounded-xl p-4 border-2 border-cyan-500/30">
-          <div className="text-sm font-bold text-cyan-300 mb-3 text-center">
-            🎮 Power-Ups (Click to Activate)
+        <div className="mb-6 bg-gradient-to-r from-slate-800/80 to-slate-700/80 border border-amber-400/30 rounded-xl p-6 shadow-lg">
+          <div className="text-center mb-4">
+            <div className="inline-flex items-center gap-2 text-amber-300 font-bold text-lg">
+              <span className="text-2xl">⚜️</span>
+              <span>Royal Enhancements</span>
+              <span className="text-2xl">⚜️</span>
+            </div>
           </div>
           <div className="flex flex-wrap gap-2 justify-center">
             {availablePowerUps.doubleSpeed > 0 && (
               <button
                 onClick={() => activatePowerUp('doubleSpeed')}
                 disabled={availablePowerUps.doubleSpeed <= 0}
-                className="px-4 py-2 bg-gradient-to-r from-yellow-400 to-orange-500 text-white rounded-lg font-semibold hover:scale-105 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-6 py-3 bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-500 hover:to-amber-600 text-white rounded-lg font-semibold border border-amber-400/30 shadow-lg hover:shadow-amber-400/20 hover:scale-105 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 ⚡ Double Speed ({availablePowerUps.doubleSpeed})
               </button>
@@ -879,7 +949,7 @@ const SpermRace = ({ broScore, purchasedPowerUps, onComplete }) => {
               <button
                 onClick={() => activatePowerUp('speedBoost')}
                 disabled={availablePowerUps.speedBoost <= 0}
-                className="px-4 py-2 bg-gradient-to-r from-blue-400 to-cyan-500 text-white rounded-lg font-semibold hover:scale-105 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-6 py-3 bg-gradient-to-r from-blue-700 to-blue-800 hover:from-blue-600 hover:to-blue-700 text-white rounded-lg font-semibold border border-blue-400/30 shadow-lg hover:shadow-blue-400/20 hover:scale-105 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 🚀 Speed Boost ({availablePowerUps.speedBoost})
               </button>
@@ -888,7 +958,7 @@ const SpermRace = ({ broScore, purchasedPowerUps, onComplete }) => {
               <button
                 onClick={() => activatePowerUp('shield')}
                 disabled={availablePowerUps.shield <= 0}
-                className="px-4 py-2 bg-gradient-to-r from-purple-400 to-pink-500 text-white rounded-lg font-semibold hover:scale-105 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-6 py-3 bg-gradient-to-r from-purple-700 to-purple-800 hover:from-purple-600 hover:to-purple-700 text-white rounded-lg font-semibold border border-purple-400/30 shadow-lg hover:shadow-purple-400/20 hover:scale-105 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 🛡️ Shield ({availablePowerUps.shield})
               </button>
@@ -897,7 +967,7 @@ const SpermRace = ({ broScore, purchasedPowerUps, onComplete }) => {
               <button
                 onClick={() => activatePowerUp('slowEnemies')}
                 disabled={availablePowerUps.slowEnemies <= 0}
-                className="px-4 py-2 bg-gradient-to-r from-amber-400 to-amber-500 text-white rounded-lg font-semibold hover:scale-105 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-6 py-3 bg-gradient-to-r from-orange-700 to-orange-800 hover:from-orange-600 hover:to-orange-700 text-white rounded-lg font-semibold border border-orange-400/30 shadow-lg hover:shadow-orange-400/20 hover:scale-105 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 🐌 Slow Enemies ({availablePowerUps.slowEnemies})
               </button>
@@ -906,7 +976,7 @@ const SpermRace = ({ broScore, purchasedPowerUps, onComplete }) => {
               <button
                 onClick={() => activatePowerUp('instantBoost')}
                 disabled={availablePowerUps.instantBoost <= 0}
-                className="px-4 py-2 bg-gradient-to-r from-red-400 to-pink-500 text-white rounded-lg font-semibold hover:scale-105 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-6 py-3 bg-gradient-to-r from-red-700 to-red-800 hover:from-red-600 hover:to-red-700 text-white rounded-lg font-semibold border border-red-400/30 shadow-lg hover:shadow-red-400/20 hover:scale-105 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 💨 Instant Boost ({availablePowerUps.instantBoost})
               </button>
@@ -915,7 +985,7 @@ const SpermRace = ({ broScore, purchasedPowerUps, onComplete }) => {
               <button
                 onClick={() => activatePowerUp('magnet')}
                 disabled={availablePowerUps.magnet <= 0}
-                className="px-4 py-2 bg-gradient-to-r from-indigo-400 to-blue-500 text-white rounded-lg font-semibold hover:scale-105 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-6 py-3 bg-gradient-to-r from-indigo-700 to-indigo-800 hover:from-indigo-600 hover:to-indigo-700 text-white rounded-lg font-semibold border border-indigo-400/30 shadow-lg hover:shadow-indigo-400/20 hover:scale-105 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 🧲 Magnet ({availablePowerUps.magnet})
               </button>

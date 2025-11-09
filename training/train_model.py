@@ -1,12 +1,18 @@
 from ultralytics import YOLO
 
-# Load a pretrained YOLOv8 model
-model = YOLO('yolov8n.pt')
+# Load existing model if available, otherwise use pretrained YOLOv8
+import os
+if os.path.exists('../backend/best.pt'):
+    print("Loading existing model for transfer learning...")
+    model = YOLO('../backend/best.pt')
+else:
+    print("No existing model found, starting from pretrained YOLOv8...")
+    model = YOLO('yolov8n.pt')
 
 # Train the model (CPU optimized)
 results = model.train(
-    data='dataset/My First Project.v1i.yolov8/data.yaml',
-    epochs=50,      # Reduced from 100
+    data='dataset/My First Project.v2i.yolov8/data.yaml',
+    epochs=25,      # Transfer learning needs fewer epochs
     imgsz=416,      # Reduced from 640  
     batch=4,        # Reduced from 16
     workers=2,      # CPU workers

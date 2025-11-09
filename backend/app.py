@@ -111,10 +111,17 @@ def analyze_image():
             'macbook_pro': 10
         }
         
+        # Deduplicate items - only count each item type once per photo
+        detected_items = set()
         for class_name in classes:
-            if class_name in bro_items:
+            if class_name in bro_items and class_name not in detected_items:
+                detected_items.add(class_name)
                 points = bro_items[class_name]
-                detected.append({"name": class_name.replace('_', ' ').title(), "points": points})
+                # Custom display names
+                display_name = class_name.replace('_', ' ').title()
+                if class_name == 'patagonia_vest':
+                    display_name = 'Varsity Jacket'
+                detected.append({"name": display_name, "points": points})
                 score += points
         
         # Cap camera score at 200
